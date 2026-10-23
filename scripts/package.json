@@ -1,0 +1,14 @@
+{
+  "name": "twofold-scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "node --env-file=../.env --import tsx deploy.ts",
+    "e2e": "node --env-file=../.env --import tsx e2e.ts"
+  },
+  "dependencies": {
+    "@polkadot/api": "^16.5.6",
+    "tsx": "^4.23.15",
+    "viem": "^2.57.10"
+  }
+}
