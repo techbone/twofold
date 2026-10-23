@@ -1,0 +1,11 @@
+{
+  "network": "Portaldot V3 testnet",
+  "chainId": 420420777,
+  "contract": "Disperse",
+  "address": "0x389a5f1e3897a3cad547af7d872a174f5d22205c",
+  "txHash": "0x7fc579376bb429bb27163ea2cb8fe6f4108811a1f84ad227a060de5054df1123",
+  "block": 162880,
+  "deployer": "0xA406629f846528b3508f53cC183722213B35f459",
+  "costTpot": "117.54271494990702",
+  "deployedAt": "2026-10-23T16:48:25.232Z"
+}
