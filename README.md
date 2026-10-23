@@ -1,6 +1,6 @@
 # Twofold
 
-![tests](https://img.shields.io/badge/tests-10_passing-30A46C) ![rails](https://img.shields.io/badge/rails-Portaldot_V3_testnet-E5484D) ![stack](https://img.shields.io/badge/stack-Foundry_·_Next.js_·_@polkadot/api_·_viem-555)
+![tests](https://img.shields.io/badge/tests-10_passing-30A46C) ![e2e](https://img.shields.io/badge/e2e-3%2F3_balances_agree_both_sides-30A46C) ![assets](https://img.shields.io/badge/directory-16%2F16_supplies_match-30A46C) ![rails](https://img.shields.io/badge/rails-Portaldot_V3_testnet-E5484D) ![stack](https://img.shields.io/badge/stack-Foundry_·_Next.js_·_@polkadot/api_·_viem-555)
 
 ### Every Portaldot token is already an ERC-20, but nobody can find it.
 
@@ -13,6 +13,17 @@ the native side and the EVM side.
 
 ## Verify it yourself in 60 seconds
 
+**Deployed on Portaldot V3 testnet (chain 420420777)**
+
+| What | Value |
+|---|---|
+| `Disperse` contract | `0x389a5f1e3897a3cad547af7d872a174f5d22205c` |
+| Deploy tx | `0x7fc579376bb429bb27163ea2cb8fe6f4108811a1f84ad227a060de5054df1123` (block 162,880) |
+| Demo asset TWO (native id 20261023) | ERC-20 at `0x0135289f00000000000000000000000000010000` |
+| Disperse payout tx | `0xb5dca03ec4f08ca0d0cd71644e4cfe38b5a28c7358b6a73e9d17f5f15bd484fe` (block 162,890) |
+| Native launch extrinsic | `0xd62fdad837fd94a4ee377ae1603552d1399a6c6488b2e731d5a3876116a6300e` |
+| Native explorer | [node-console.portaldot.dev](https://node-console.portaldot.dev/) (there is no EVM explorer on this testnet yet) |
+
 pUSD is native asset 7777. Its ERC-20 precompile answers directly over eth-rpc:
 
 ```sh
@@ -21,10 +32,23 @@ cast call 0x00001E6100000000000000000000000000010000 "totalSupply()(uint256)" \
 # 100000000000 [1e11]   → 100,000.000000 pUSD (6 decimals)
 ```
 
+The contract is live:
+
+```sh
+cast code 0x389a5f1e3897a3cad547af7d872a174f5d22205c --rpc-url https://test-evm-rpc-v3.portaldot.dev | wc -c
+# 2677   → 1,337 bytes, same as `forge build --sizes`
+cast receipt 0xb5dca03ec4f08ca0d0cd71644e4cfe38b5a28c7358b6a73e9d17f5f15bd484fe status \
+  --rpc-url https://test-evm-rpc-v3.portaldot.dev
+# 1 (success)
+```
+
 ```sh
 cd contracts && forge test
 # Ran 2 test suites: 10 tests passed, 0 failed
 ```
+
+The full end-to-end run (launch → resolve → approve → disperse → check both sides) is in
+[docs/evidence/e2e-latest.md](docs/evidence/e2e-latest.md). Reproduce it with `cd scripts && npm run e2e`.
 
 ## Contents
 
@@ -80,15 +104,19 @@ to live pUSD and rUSD addresses. The full trail is in [docs/build-log.md](docs/b
 
 | Capability | How it's backed | Status |
 |---|---|---|
-| Asset id → ERC-20 address | Live precompile calls, tested against pUSD/rUSD | Real |
-| Disperse | Solidity on pallet-revive, unit tested | Real (testnet deploy pending) |
-| Launch, liquidity, web app | — | In progress |
+| Asset id → ERC-20 address | Live precompile calls; 16/16 testnet assets match; unit tests pinned to pUSD/rUSD | Real |
+| Disperse | Deployed on pallet-revive; e2e payout to 3 recipients agreed on both sides | Real |
+| Launch a native asset | `utility.batchAll[create, setMetadata, mint]` from the e2e script | Real (browser flow in progress) |
+| Asset directory web app | Reads pallet-assets and the precompile on every request | Real |
+| Liquidity seeding | — | Not built yet |
 | Foreign (XCM) assets | — | Not built |
 
 ## Tech stack and project layout
 
 ```
-contracts/   Foundry: NativeAsset library, Disperse contract, tests, deploy script
+contracts/   Foundry: NativeAsset library, Disperse contract, tests
+scripts/     deploy and e2e against the live testnet (@polkadot/api + viem)
+web/         Next.js asset directory: both views of every native asset
 docs/        build log, evidence from e2e runs, demo script, submission text
 ```
 
@@ -96,8 +124,12 @@ docs/        build log, evidence from e2e runs, demo script, submission text
 
 ```sh
 git clone --recursive git@github.com:techbone/twofold.git && cd twofold
-cp .env.example .env            # fill in testnet keys
-cd contracts && forge test
+cp .env.example .env            # fill in testnet keys; fund ISSUER_ADDRESS with ~200 tPOT
+cd contracts && forge test && forge build
+cd ../scripts && npm install
+npm run deploy                  # funds the EVM deployer, deploys Disperse (~118 tPOT incl. storage deposit)
+npm run e2e                     # writes docs/evidence/e2e-latest.md
+cd ../web && npm install && npm run dev
 ```
 
 ## Known limitations and disclosure

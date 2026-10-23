@@ -9,7 +9,8 @@ Read `ARCHITECTURE.md` first. Keep it updated when a decision changes.
 - Native token tPOT has **14 decimals**; eth-rpc shows 18 (`nativeToEthRatio` 10,000). Convert at the edge.
 - Gas figures are huge (~10^14) and gas price tiny (~33k wei) because weight and storage deposit
   are folded into gas. Never hardcode Ethereum gas limits.
-- Storage deposit: 0.06 tPOT per byte, 0.15 per item. Deploying Disperse (1.3 KB) costs ~80 tPOT.
+- Storage deposit: 0.06 tPOT per byte, 0.15 per item. Deploying Disperse (1.3 KB) actually cost
+  117.5 tPOT (code deposit plus the 30% code-hash lockup), not the ~80 estimated from bytes alone.
 - **Asset ERC-20 precompile address** = `asset id (u32 BE, 4 bytes) ‖ 12 zero bytes ‖ 0x0001 ‖ 0x0000`.
   pUSD (7777) → `0x00001E6100000000000000000000000000010000`. `assetsPrecompiles.*Index*` storage
   is for foreign assets only; don't use it for local ids.
