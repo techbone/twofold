@@ -6,7 +6,17 @@ import { ensurePortaldot, getWallet } from "./wallet";
 
 type State = { kind: "idle" } | { kind: "busy" } | { kind: "done" } | { kind: "error"; message: string };
 
-export function AddToWallet({ address, symbol, decimals }: { address: string; symbol: string; decimals: number }) {
+export function AddToWallet({
+  address,
+  symbol,
+  decimals,
+  long = false,
+}: {
+  address: string;
+  symbol: string;
+  decimals: number;
+  long?: boolean;
+}) {
   const [state, setState] = useState<State>({ kind: "idle" });
 
   async function add() {
@@ -33,7 +43,7 @@ export function AddToWallet({ address, symbol, decimals }: { address: string; sy
       className="inline-flex h-7 items-center gap-1.5 rounded-[var(--radius-control)] border border-border px-2 text-[12px] text-muted hover:bg-surface-2 hover:text-text disabled:opacity-60"
     >
       <Wallet size={13} strokeWidth={1.5} />
-      {state.kind === "done" ? "Added" : state.kind === "busy" ? "Confirm…" : state.kind === "error" ? "Retry" : "Add"}
+      {state.kind === "done" ? "Added" : state.kind === "busy" ? "Confirm…" : state.kind === "error" ? "Retry" : long ? "Add to MetaMask" : "Add"}
     </button>
   );
 }
