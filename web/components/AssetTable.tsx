@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { connection } from "next/server";
 import { getDirectory, type AssetRow, type SupplyCheck } from "@/lib/chain";
 import { formatAmount, shortAddress } from "@/lib/portaldot";
@@ -40,7 +41,9 @@ function Row({ a, sharedWith }: { a: AssetRow; sharedWith: number[] }) {
       <td className={`${td} num text-muted`}>{a.id}</td>
       <td className={td}>
         <div className="flex items-center gap-1.5">
-          <span className="font-medium">{a.symbol || "—"}</span>
+          <Link href={`/asset/${a.id}`} className="font-medium underline-offset-2 hover:underline">
+            {a.symbol || `Asset ${a.id}`}
+          </Link>
           {sharedWith.length > 0 && (
             <span
               title={`Symbol also used by asset ${sharedWith.join(", ")}. Check the id before adding.`}

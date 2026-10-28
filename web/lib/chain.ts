@@ -56,6 +56,22 @@ export type AssetRow = {
 
 export type Directory = { block: number; blockTime: string; readAt: string; assets: AssetRow[] };
 
+/**
+ * The eth-rpc node intermittently answers precompile reads with a "memory allocation error" revert,
+ * then recovers seconds later (seen during the 2026-10-28 testnet halt). Retry a few times before
+ * calling a read unreadable.
+ */
+async function withRetry<T>(read: () => Promise<T>, attempts = 4): Promise<T | null> {
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await read();
+    } catch {
+      if (i < attempts - 1) await new Promise((r) => setTimeout(r, 400 * (i + 1)));
+    }
+  }
+  return null;
+}
+
 function decodeText(bytes: { toUtf8(): string; toHex(): string }): string {
   try {
     return bytes.toUtf8();
@@ -94,9 +110,9 @@ export async function getDirectory(): Promise<Directory> {
         const m = meta.get(id);
         const erc20 = erc20Address(id);
         const nativeSupply = d.supply.toBigInt();
-        const evmSupply = await evm
-          .readContract({ address: erc20, abi: erc20Abi, functionName: "totalSupply" })
-          .catch(() => null);
+        const evmSupply = await withRetry(() =>
+          evm.readContract({ address: erc20, abi: erc20Abi, functionName: "totalSupply" }),
+        );
         return {
           id,
           name: m ? decodeText(m.name) : "",
@@ -120,5 +136,97 @@ export async function getDirectory(): Promise<Directory> {
     blockTime: new Date(now.toNumber()).toISOString(),
     readAt: new Date().toISOString(),
     assets,
+  };
+}
+
+export type AssetDetail = {
+  id: number;
+  symbol: string;
+  name: string;
+  decimals: number;
+  erc20: string;
+  isSufficient: boolean;
+  status: string;
+  hasPool: boolean;
+  native: {
+    owner: string;
+    issuer: string;
+    admin: string;
+    freezer: string;
+    supply: string;
+    accounts: number;
+    minBalance: string;
+    deposit: string;
+  };
+  evm: {
+    totalSupply: string | null;
+    decimals: number | null;
+    name: string | null;
+    symbol: string | null;
+  };
+  block: number;
+  blockTime: string;
+  readAt: string;
+};
+
+/** One asset, both views. Returns null when no such asset exists on the native side. */
+export async function getAsset(id: number): Promise<AssetDetail | null> {
+  "use cache";
+  cacheLife({ stale: 30, revalidate: 30, expire: 600 });
+
+  const api = await substrate();
+  const [opt, m, poolKeys, header, now] = await Promise.all([
+    api.query.assets.asset(id),
+    api.query.assets.metadata(id),
+    api.query.assetConversion.pools.keys(),
+    api.rpc.chain.getHeader(),
+    api.query.timestamp.now(),
+  ]);
+  if (opt.isNone) return null;
+  const d = opt.unwrap();
+  const erc20 = erc20Address(id);
+
+  const read = <T>(functionName: "totalSupply" | "decimals" | "name" | "symbol") =>
+    withRetry(() => evm.readContract({ address: erc20, abi: erc20Abi, functionName }) as Promise<T>);
+  const [totalSupply, evmDecimals, evmName, evmSymbol] = await Promise.all([
+    read<bigint>("totalSupply"),
+    read<number>("decimals"),
+    read<string>("name"),
+    read<string>("symbol"),
+  ]);
+
+  const hasPool = poolKeys.some((k) => {
+    const [a, b] = k.args[0].toJSON() as [Record<string, unknown>, Record<string, unknown>];
+    return "native" in a && "withId" in b && Number(b.withId) === id;
+  });
+
+  return {
+    id,
+    symbol: decodeText(m.symbol),
+    name: decodeText(m.name),
+    decimals: m.decimals.toNumber(),
+    erc20,
+    isSufficient: d.isSufficient.isTrue,
+    status: d.status.type,
+    hasPool,
+    native: {
+      owner: d.owner.toString(),
+      issuer: d.issuer.toString(),
+      admin: d.admin.toString(),
+      freezer: d.freezer.toString(),
+      supply: d.supply.toBigInt().toString(),
+      accounts: d.accounts.toNumber(),
+      minBalance: d.minBalance.toBigInt().toString(),
+      deposit: d.deposit.toBigInt().toString(),
+    },
+    evm: {
+      totalSupply: totalSupply === null ? null : totalSupply.toString(),
+      decimals: evmDecimals === null ? null : Number(evmDecimals),
+      name: evmName,
+      symbol: evmSymbol,
+    },
+    block: header.number.toNumber(),
+    blockTime: new Date(now.toNumber()).toISOString(),
+    readAt: new Date().toISOString(),
   };
 }

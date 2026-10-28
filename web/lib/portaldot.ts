@@ -32,7 +32,8 @@ export function assetIdFromAddress(address: string): number | null {
 }
 
 export function shortAddress(address: string, head = 10, tail = 8): string {
-  const a = address.toLowerCase();
+  // SS58 is case-sensitive; only 0x addresses are lowercased for a consistent look.
+  const a = address.startsWith("0x") ? address.toLowerCase() : address;
   return a.length <= head + tail ? a : `${a.slice(0, head)}…${a.slice(-tail)}`;
 }
 
