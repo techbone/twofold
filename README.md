@@ -9,7 +9,7 @@ address straight away, hold it in MetaMask, seed a pool and pay out to many hold
 Solidity, all on the live Portaldot V3 testnet with no mocks. Every balance is checked from both
 the native side and the EVM side.
 
-**Watch the demo** (soon) · **Live app** (soon) · [**Verify it yourself**](#verify-it-yourself-in-60-seconds) · [**Architecture**](ARCHITECTURE.md) · [**Run it locally**](#run-it-locally)
+**Watch the demo** (soon) · [**Live app**](https://twofold-tau-sooty.vercel.app) · [**Verify it yourself**](#verify-it-yourself-in-60-seconds) · [**Architecture**](ARCHITECTURE.md) · [**Run it locally**](#run-it-locally)
 
 ## Verify it yourself in 60 seconds
 

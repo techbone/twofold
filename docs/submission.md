@@ -24,4 +24,4 @@ _Paste-ready paragraph: fill at M4._
 - **Native launch extrinsic:** 0xd62fdad837fd94a4ee377ae1603552d1399a6c6488b2e731d5a3876116a6300e
 - **Explorer:** https://node-console.portaldot.dev/ (native only; no EVM explorer on this testnet)
 - **Evidence:** https://github.com/techbone/twofold/blob/main/docs/evidence/e2e-latest.md
-- **Demo:** live link (Vercel, pending) or a video of 3 minutes or less
+- **Demo:** https://twofold-tau-sooty.vercel.app (live asset directory reading the testnet; video to follow)
