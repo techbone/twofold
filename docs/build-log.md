@@ -36,3 +36,16 @@ Each time the rails or our code surprised us: the dead end, the path chosen, the
 - **Product consequence:** the disperse flow must check each recipient's native existence first and
   offer to fund them in the same session, rather than let one bad row revert the whole batch.
 - **Guard:** `npm run e2e` simulates the unfunded case on every run and records the result.
+
+## 2026-10-28 — The live site took 15 seconds, then the chain stopped
+
+- **Cold start:** the first request after a deploy took 15.3s; repeats 2.5–3.6s. Cause: `ApiPromise.create`
+  downloads the full runtime metadata (1.1 MB) on every cold start, ~7.7s from here.
+- **Path chosen:** bundle the metadata (`web/lib/metadata.json`, refresh with `npm run metadata`) keyed by
+  genesis hash and spec version. Connect time 7.7s → 2.3s. If the runtime upgrades, the key no longer
+  matches and @polkadot/api fetches fresh metadata itself. Also batch the EVM `totalSupply()` calls and
+  discard a failed or dropped connection so a dead promise isn't reused.
+- **The testnet stopped:** latest block 232,115 stamped 12:45:54 UTC, 4h+ old when found, node reports
+  0 peers and `shouldHavePeers: true`, 2 validators. Reads still work, writes can't land.
+- **Product consequence:** the directory shows a warning when the last block is more than 2 minutes older
+  than the read, so a judge opening the site during an outage sees why, not a seemingly healthy page.
