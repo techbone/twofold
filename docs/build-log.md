@@ -49,3 +49,16 @@ Each time the rails or our code surprised us: the dead end, the path chosen, the
   0 peers and `shouldHavePeers: true`, 2 validators. Reads still work, writes can't land.
 - **Product consequence:** the directory shows a warning when the last block is more than 2 minutes older
   than the read, so a judge opening the site during an outage sees why, not a seemingly healthy page.
+
+## 2026-10-28 — The precompile answers name() and symbol() too, and the RPC flaps
+
+- Probed the assets precompile for 7777 and our TWO token: `name()`, `symbol()`, `decimals()` and
+  `totalSupply()` all return the native values. The asset page now compares all four from both sides.
+- During the testnet halt the eth-rpc node answered the same precompile calls with
+  `execution reverted: panic: memory allocation error (0x41)` in bursts, then recovered seconds later
+  (6/6 failures in one loop, 8/8 successes a minute later). **Guard:** every precompile read retries
+  four times with backoff before the page calls it unreadable.
+- A precompile call for an asset id that does not exist returns `0`, not a revert. A zero supply is
+  therefore not proof an asset exists; the asset page checks native storage first and 404s on a miss.
+- `shortAddress` lowercased everything, which corrupted case-sensitive SS58 owner addresses
+  (`5Eph8MeA…` showed as `5eph8mea…`). Only `0x` addresses are lowercased now.
