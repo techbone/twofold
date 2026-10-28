@@ -106,7 +106,7 @@ to live pUSD and rUSD addresses. The full trail is in [docs/build-log.md](docs/b
 |---|---|---|
 | Asset id → ERC-20 address | Live precompile calls; 16/16 testnet assets match; unit tests pinned to pUSD/rUSD | Real |
 | Disperse | Deployed on pallet-revive; e2e payout to 3 recipients agreed on both sides | Real |
-| Launch a native asset | `utility.batchAll[create, setMetadata, mint]` from the e2e script | Real (browser flow in progress) |
+| Launch a native asset | `utility.batchAll[create, setMetadata, mint]` from the e2e script | Real on testnet from the script. Browser flow (`/launch`) is built and its transaction dry-runs clean, but wallet signing is untested until the testnet resumes |
 | Asset directory web app | Reads pallet-assets and the precompile on every request | Real |
 | Liquidity seeding | — | Not built yet |
 | Foreign (XCM) assets | — | Not built |

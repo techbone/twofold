@@ -62,3 +62,17 @@ Each time the rails or our code surprised us: the dead end, the path chosen, the
   therefore not proof an asset exists; the asset page checks native storage first and 404s on a miss.
 - `shortAddress` lowercased everything, which corrupted case-sensitive SS58 owner addresses
   (`5Eph8MeA…` showed as `5eph8mea…`). Only `0x` addresses are lowercased now.
+
+## 2026-10-28 — Testing a wallet flow while the chain is stopped
+
+- `/launch` signs one `utility.batchAll[create, setMetadata, mint]` with a Polkadot-style wallet
+  (SubWallet, Talisman, Polkadot.js) through `@polkadot/extension-dapp`.
+- **Can't submit anything with no blocks and no wallet in the test browser.** What we could check:
+  `system_dryRun` of the exact batch signed by the throwaway issuer returned `Ok(Ok)` against live
+  state, and `paymentInfo` measured a **0.0235 tPOT** fee, 20× below the 0.5 tPOT first guessed.
+  A Chrome run confirmed the no-wallet message, input validation (50-byte limit, decimals), taken-id
+  detection (7777) and the disabled launch button while the chain is stalled.
+- **Not yet verified:** the real signing prompt in SubWallet, and whether SubWallet accepts a payload for
+  a chain it doesn't have metadata for. If it doesn't, the fix is adding Portaldot V3 as a custom network.
+- `batchAll` success is detected from `ExtrinsicSuccess` in the block, not from "in block" alone, so a
+  failed inner call can't show as done.
