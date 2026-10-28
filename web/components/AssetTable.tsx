@@ -1,6 +1,7 @@
 import { connection } from "next/server";
 import { getDirectory, type AssetRow, type SupplyCheck } from "@/lib/chain";
 import { formatAmount, shortAddress } from "@/lib/portaldot";
+import { AlertTriangle } from "lucide-react";
 import { AddToWallet } from "./AddToWallet";
 import { CopyButton } from "./CopyButton";
 
@@ -21,6 +22,13 @@ const CHECK: Record<SupplyCheck, { label: string; className: string; title: stri
     title: "The precompile did not answer totalSupply()",
   },
 };
+
+function formatAge(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  if (m < 60) return `${m} min`;
+  const h = Math.floor(m / 60);
+  return h < 48 ? `${h} h ${m % 60} min` : `${Math.floor(h / 24)} days`;
+}
 
 const th = "px-3 py-2.5 text-left text-[12px] font-medium text-muted whitespace-nowrap";
 const td = "px-3 py-3 align-middle whitespace-nowrap";
@@ -73,6 +81,8 @@ function Row({ a, sharedWith }: { a: AssetRow; sharedWith: number[] }) {
 export async function AssetTable() {
   await connection();
   const dir = await getDirectory();
+  const lagSeconds = Math.max(0, (Date.parse(dir.readAt) - Date.parse(dir.blockTime)) / 1000);
+  const stalled = lagSeconds > 120;
   const matched = dir.assets.filter((a) => a.check === "match").length;
   const bySymbol = new Map<string, number[]>();
   for (const a of dir.assets) if (a.symbol) bySymbol.set(a.symbol, [...(bySymbol.get(a.symbol) ?? []), a.id]);
@@ -80,6 +90,19 @@ export async function AssetTable() {
 
   return (
     <section>
+      {stalled && (
+        <div
+          role="status"
+          className="mb-4 flex items-start gap-2 rounded-[var(--radius-card)] border border-border bg-warning-bg px-3 py-2.5 text-[13px] text-warning"
+        >
+          <AlertTriangle size={16} strokeWidth={1.5} className="mt-px shrink-0" />
+          <p>
+            The Portaldot testnet has not produced a block for {formatAge(lagSeconds)}. What you see is the
+            chain&apos;s last state, block <span className="num">#{dir.block.toLocaleString("en-US")}</span>. Reads
+            stay correct; transactions will wait until blocks resume.
+          </p>
+        </div>
+      )}
       <div className="flex flex-wrap items-end justify-between gap-2">
         <h2 className="font-display text-[20px] font-semibold tracking-[-0.01em]">
           Native assets on testnet <span className="num text-muted">{dir.assets.length}</span>
