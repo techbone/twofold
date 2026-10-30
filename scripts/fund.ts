@@ -1,8 +1,9 @@
-import { connect, fmt, nativeFree, send, TPOT } from "./clients.ts";
+import { connect, fallbackAccount, fmt, nativeFree, send, TPOT } from "./clients.ts";
 
-// usage: npm run fund -- <native address> [tPOT amount]
-const [to, amountArg = "5"] = process.argv.slice(2);
-if (!to) throw new Error("usage: npm run fund -- <native address> [tPOT amount]");
+// usage: npm run fund -- <native or 0x address> [tPOT amount]
+const [target, amountArg = "5"] = process.argv.slice(2);
+if (!target) throw new Error("usage: npm run fund -- <native or 0x address> [tPOT amount]");
+const to = target.startsWith("0x") ? fallbackAccount(target) : target;
 
 const { api, issuer } = await connect();
 const amount = BigInt(Math.round(Number(amountArg) * 1e4)) * (TPOT / 10_000n);
