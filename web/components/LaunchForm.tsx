@@ -124,6 +124,9 @@ export function LaunchForm() {
   const nameLen = bytes.encode(name).length;
   const symLen = bytes.encode(symbol).length;
 
+  // Once a launch is under way the id is ours, so "taken" would only be our own asset showing up.
+  const taken = idFree === false && !steps;
+
   const problems = useMemo(() => {
     const p: string[] = [];
     if (!name.trim() || nameLen > 50) p.push("Name must be 1–50 bytes.");
@@ -131,20 +134,21 @@ export function LaunchForm() {
     if (decNum === null || decNum > 18) p.push("Decimals must be 0–18.");
     else if (supplyRaw === null || supplyRaw === 0n) p.push(`Supply must be a positive number with at most ${decNum} decimals.`);
     if (idNum === null || idNum > 0xffffffff) p.push("Asset id must be a number up to 4,294,967,295.");
-    else if (idFree === false) p.push("That asset id is taken.");
+    else if (taken) p.push("That asset id is taken.");
     return p;
-  }, [name, nameLen, symbol, symLen, decNum, supplyRaw, idNum, idFree]);
+  }, [name, nameLen, symbol, symLen, decNum, supplyRaw, idNum, taken]);
 
   // Deposits are returned if the asset is destroyed; fees are not. A dry run of this batch measured a
-  // 0.0235 tPOT fee, so 0.1 leaves headroom.
+  // 0.0235 tPOT fee, so 0.1 leaves headroom. The 1 tPOT asset-account deposit is left out on purpose:
+  // pallet-assets doesn't take it when the holder already has tPOT, and the signer always does. A real
+  // launch of a 7-byte name and symbol cost 1.5427 tPOT, which matches.
   const cost = useMemo(() => {
     if (!api) return null;
     const c = api.consts.assets;
     const deposits =
       c.assetDeposit.toBigInt() +
       c.metadataDepositBase.toBigInt() +
-      c.metadataDepositPerByte.toBigInt() * BigInt(nameLen + symLen) +
-      c.assetAccountDeposit.toBigInt();
+      c.metadataDepositPerByte.toBigInt() * BigInt(nameLen + symLen);
     return { deposits, total: deposits + TPOT / 10n };
   }, [api, nameLen, symLen]);
 
@@ -297,7 +301,7 @@ export function LaunchForm() {
               <label htmlFor="assetId" className={label}>
                 Native asset id{" "}
                 {idFree === true && <span className="text-success">· available</span>}
-                {idFree === false && <span className="text-danger">· taken</span>}
+                {taken && <span className="text-danger">· taken</span>}
               </label>
               <div className="mt-1.5 flex gap-2">
                 <input id="assetId" inputMode="numeric" className={field} value={assetId} onChange={(e) => setAssetId(e.target.value)} disabled={!!steps} />

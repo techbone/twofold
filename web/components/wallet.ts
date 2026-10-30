@@ -18,7 +18,9 @@ export async function ensurePortaldot(wallet: Eip1193) {
   try {
     await wallet.request({ method: "wallet_switchEthereumChain", params: [{ chainId }] });
   } catch (err) {
-    if ((err as { code?: number }).code !== 4902) throw err;
+    // MetaMask answers 4902 for an unknown chain, Rabby and others use a different code or only a message.
+    // The user rejecting the prompt is the one case where adding the chain would be wrong.
+    if ((err as { code?: number }).code === 4001) throw err;
     await wallet.request({
       method: "wallet_addEthereumChain",
       params: [
@@ -30,5 +32,7 @@ export async function ensurePortaldot(wallet: Eip1193) {
         },
       ],
     });
+    // Some wallets add the chain without switching to it.
+    await wallet.request({ method: "wallet_switchEthereumChain", params: [{ chainId }] });
   }
 }
