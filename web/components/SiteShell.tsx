@@ -11,10 +11,11 @@ export function SiteHeader() {
         <nav className="ml-6 mr-auto flex items-center gap-4 text-[13px] text-muted">
           <Link href="/" className="hover:text-text">Assets</Link>
           <Link href="/launch" className="hover:text-text">Launch</Link>
+          <Link href="/payout" className="hover:text-text">Payout</Link>
         </nav>
         <span className="flex items-center gap-2 text-[12px] text-muted">
           <span className="size-1.5 rounded-full bg-success" aria-hidden />
-          Portaldot V3 testnet
+          <span className="hidden sm:inline">Portaldot V3 testnet</span>
           <span className="num hidden text-faint sm:inline">chain 420420777</span>
         </span>
       </div>

@@ -56,7 +56,15 @@ async function Detail({ params }: { params: Promise<{ id: string }> }) {
             {lagSeconds > 120 && <span className="text-warning">Chain not producing blocks; showing last state</span>}
           </p>
         </div>
-        <AddToWallet address={a.erc20} symbol={a.symbol || `A${a.id}`} decimals={a.decimals} long />
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/payout?asset=${a.id}`}
+            className="inline-flex h-7 items-center rounded-[var(--radius-control)] border border-border px-2 text-[12px] text-muted hover:bg-surface-2 hover:text-text"
+          >
+            Pay out
+          </Link>
+          <AddToWallet address={a.erc20} symbol={a.symbol || `A${a.id}`} decimals={a.decimals} long />
+        </div>
       </div>
 
       <Faces a={a} />
