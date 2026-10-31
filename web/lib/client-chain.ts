@@ -28,17 +28,31 @@ export function getApi(): Promise<ApiPromise> {
   return apiPromise;
 }
 
-const evm = createPublicClient({ chain: portaldot, transport: http(undefined, { batch: true }) });
+export const evmClient = createPublicClient({ chain: portaldot, transport: http(undefined, { batch: true }) });
 
-export async function readTotalSupply(assetId: number, attempts = 4): Promise<bigint | null> {
+/** eth-rpc answers some reads with a transient revert during halts, so reads get a few tries. */
+export async function withRetry<T>(fn: () => Promise<T>, attempts = 4): Promise<T> {
+  let last: unknown;
   for (let i = 0; i < attempts; i++) {
     try {
-      return await evm.readContract({ address: erc20Address(assetId), abi: erc20Abi, functionName: "totalSupply" });
-    } catch {
+      return await fn();
+    } catch (e) {
+      last = e;
       await new Promise((r) => setTimeout(r, 400 * (i + 1)));
     }
   }
-  return null;
+  throw last;
+}
+
+export async function readTotalSupply(assetId: number, attempts = 4): Promise<bigint | null> {
+  try {
+    return await withRetry(
+      () => evmClient.readContract({ address: erc20Address(assetId), abi: erc20Abi, functionName: "totalSupply" }),
+      attempts,
+    );
+  } catch {
+    return null;
+  }
 }
 
 /** Decimal string → base units, rejecting more fractional digits than the asset has. */

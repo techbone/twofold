@@ -1,13 +1,14 @@
 "use client";
 
-import type { ApiPromise } from "@polkadot/api";
 import type { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
-import { AlertTriangle, Check, Loader2, Minus, X } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getApi, parseAmount, readTotalSupply } from "@/lib/client-chain";
+import { parseAmount, readTotalSupply } from "@/lib/client-chain";
 import { erc20Address, formatAmount, NATIVE_DECIMALS, shortAddress } from "@/lib/portaldot";
 import { CopyButton } from "./CopyButton";
+import { type Step, type StepState, StepList } from "./StepList";
+import { useApi, useLagSeconds } from "./useChain";
 
 type Wallet =
   | { kind: "idle" }
@@ -15,9 +16,6 @@ type Wallet =
   | { kind: "missing" }
   | { kind: "denied" }
   | { kind: "ready"; accounts: InjectedAccountWithMeta[] };
-
-type StepState = "todo" | "active" | "done" | "error";
-type Step = { key: string; label: string; state: StepState; detail?: string };
 
 const STEPS: Step[] = [
   { key: "sign", label: "Sign in your wallet", state: "todo" },
@@ -41,10 +39,9 @@ function randomAssetId() {
 export function LaunchForm() {
   const [wallet, setWallet] = useState<Wallet>({ kind: "idle" });
   const [address, setAddress] = useState("");
-  const [api, setApi] = useState<ApiPromise | null>(null);
-  const [apiError, setApiError] = useState<string | null>(null);
+  const { api, error: apiError } = useApi();
+  const lagSeconds = useLagSeconds(api);
   const [balance, setBalance] = useState<bigint | null>(null);
-  const [lagSeconds, setLagSeconds] = useState<number | null>(null);
 
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
@@ -58,31 +55,6 @@ export function LaunchForm() {
   const [launched, setLaunched] = useState<number | null>(null);
 
   useEffect(() => setAssetId(String(randomAssetId())), []);
-
-  useEffect(() => {
-    let cancelled = false;
-    getApi()
-      .then((a) => !cancelled && setApi(a))
-      .catch((e: Error) => !cancelled && setApiError(e.message));
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!api) return;
-    let live = true;
-    const tick = async () => {
-      const now = (await api.query.timestamp.now()).toNumber();
-      if (live) setLagSeconds(Math.max(0, (Date.now() - now) / 1000));
-    };
-    void tick();
-    const t = setInterval(tick, 15_000);
-    return () => {
-      live = false;
-      clearInterval(t);
-    };
-  }, [api]);
 
   useEffect(() => {
     if (!api || !address) return setBalance(null);
@@ -349,28 +321,7 @@ export function LaunchForm() {
           >
             {!api && !apiError ? "Connecting to the node…" : "Launch token"}
           </button>
-          {steps && (
-            <ol className="mt-5 space-y-3" aria-live="polite">
-              {steps.map((s) => (
-                <li key={s.key} className="flex items-start gap-2.5 text-[13px]">
-                  <span className="mt-0.5 shrink-0">
-                    {s.state === "done" && <Check size={15} strokeWidth={1.75} className="text-success" />}
-                    {s.state === "active" && <Loader2 size={15} strokeWidth={1.5} className="animate-spin text-muted" />}
-                    {s.state === "error" && <X size={15} strokeWidth={1.75} className="text-danger" />}
-                    {s.state === "todo" && <Minus size={15} strokeWidth={1.5} className="text-faint" />}
-                  </span>
-                  <span className="min-w-0">
-                    <span className={s.state === "todo" ? "text-faint" : ""}>{s.label}</span>
-                    {s.detail && (
-                      <span className={`num mt-0.5 block break-all text-[12px] ${s.state === "error" ? "text-danger" : "text-muted"}`}>
-                        {s.detail}
-                      </span>
-                    )}
-                  </span>
-                </li>
-              ))}
-            </ol>
-          )}
+          {steps && <StepList steps={steps} />}
           {steps?.some((s) => s.state === "error") && (
             <button
               type="button"
