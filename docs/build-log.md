@@ -112,3 +112,12 @@ Each time the rails or our code surprised us: the dead end, the path chosen, the
 - A test bug worth remembering: my first wait matched the step label "Balances agree on both sides"
   and closed the browser mid-payout. The payout still landed, since the wallet side kept running.
 - Not yet tried: MetaMask or Rabby clicking through the real prompts.
+
+## 2026-11-01 — Payout from a real wallet
+
+- Paid 1 WL (native id 71369440) to two fresh addresses from Rabby on the live site. The page found both
+  recipients had no tPOT, the user topped them up from Rabby with two confirmations, then approved and paid.
+  Approve `0xedb8873a1b6db7ad09fc6f1153aad88c19c8ca60e92bf233411f7b623fa8e0d0`, payout
+  `0x95f01798c20f8ab415143215078a618387e3ff69f2a0836f043a74f764ce674e`, block 269,675. Both recipients read 1
+  on `assets.account` and on the precompile `balanceOf`.
+- Rabby estimated and signed the transactions without any gas override from us beyond the padded estimate.
