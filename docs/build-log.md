@@ -121,3 +121,18 @@ Each time the rails or our code surprised us: the dead end, the path chosen, the
   `0x95f01798c20f8ab415143215078a618387e3ff69f2a0836f043a74f764ce674e`, block 269,675. Both recipients read 1
   on `assets.account` and on the precompile `balanceOf`.
 - Rabby estimated and signed the transactions without any gas override from us beyond the padded estimate.
+
+## 2026-11-01 — Demo video
+
+- Recorded the live site with Playwright and cut it with ffmpeg (captions and cards rendered as PNG
+  overlays, so no font or libass dependency). Wallets are scripted: a stand-in `injectedWeb3` signs the launch
+  extrinsic with the issuer key, and a stand-in `window.ethereum` signs the EVM transactions with the deployer
+  key. The transactions are real, only the wallet UI is absent, and the end card says so.
+- Launch of CRED (native id 644897332) and the payout were both recorded for real. Payout: approve
+  `0x30864047a738df5320e492c682e734319f739a9e1fd11ad4a6e4378a0b465ecf`, payout
+  `0x60128442d0705f6e2ea33b3bdf263e97708fea63c2e28d731254c2077c2e08dc`, block 269,891, 3 of 3 recipients agree.
+- Chrome's recorder leaves an 88 px grey strip at the bottom of the frame whatever the viewport size, so
+  scenes are recorded 88 px taller and cropped. First cut had it in every frame, which a still-frame review
+  caught. The same review caught the closing caption covering the proof table, which now sits at the top.
+- Verified before claiming it: every one of the 33 native assets has the same total supply on the native side
+  and from the precompile (33/33).

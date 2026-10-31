@@ -4,7 +4,7 @@
 **Track:** Modular Cloud & Middleware
 **One-liner:** Every Portaldot token is already an ERC-20. Twofold makes it findable and usable.
 
-_Paste-ready paragraph: fill at M4._
+Paste-ready build page text for the DoraHacks form: see [dorahacks-build.md](dorahacks-build.md).
 
 ## Check-in (Oct 24 12:00 UTC)
 

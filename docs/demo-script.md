@@ -1,14 +1,19 @@
-# Demo script (≤ 3:00)
+# Demo video (about 2:00, silent, captioned)
 
-Interesting part first. Real runs only. Say so on screen if anything is sped up.
+Real runs only, against the live site and the live testnet. Nothing is sped up. The wallets are scripted
+(a stand-in that signs real transactions with throwaway keys), and the video says so on screen. Real SubWallet and
+Rabby runs are in `docs/build-log.md`.
 
-| Time | Screen | Narration | Must be true before recording |
-|---|---|---|---|
-| 0:00 | Asset directory, pUSD row: native id 7777 next to `0x00001E61…` | "Every Portaldot token is already an ERC-20. This is pUSD's. Until now, nobody could find it." | Directory live, pUSD resolves |
-| 0:15 | Launch form → one native signature | "Launch a token on the native side." | Issuer funded |
-| 0:40 | New asset page: native supply = `totalSupply()` | "Same token, two faces, same numbers, read from both sides." | |
-| 1:00 | Add to MetaMask → token appears | "No bridge, no wrapper." | MetaMask on chain 420420777 |
-| 1:20 | Disperse: approve → submit → in block → verified | "Pay three holders from Solidity in one transaction." | Disperse deployed |
-| 2:00 | Native `assets.account` balances vs `balanceOf` | "Verified on both sides before we say done." | |
-| 2:20 | Pool seeded | "Tradable on Portaldot's native DEX." | |
-| 2:40 | README verify block | "Check every claim yourself in 60 seconds." | |
+| Time | Screen | Caption |
+|---|---|---|
+| 0:00 | Title card | Every Portaldot token is already an ERC-20. Nobody can find it. |
+| 0:05 | Asset directory, hover on pUSD | 33 native assets live on Portaldot V3. Each one is already an ERC-20. Its address isn't in the docs. |
+| 0:15 | pUSD asset page | Left: pallet-assets. Right: the ERC-20 precompile. Every field matches. |
+| 0:25 | Launch form, then the signature | One batch: create, set metadata, mint. About 1.5 tPOT in deposits. |
+| 0:55 | New token's asset page | The new token is already an ERC-20. Same name, symbol and supply on both sides. |
+| 1:10 | Payout: recipients checked, two top-ups | Two recipients have never held tPOT. Checked before anything is sent. |
+| 1:40 | Approve, payout, verification table | Native balance equals ERC-20 balance for every recipient. |
+| 1:55 | End card | Live app, repo, contract address, and the disclosure about scripted wallets. |
+
+Made with Playwright (screen recording of the live site) and ffmpeg (captions and cards as PNG overlays).
+The output is `demo-out/twofold-demo.mp4`, which is gitignored. Upload it unlisted.
