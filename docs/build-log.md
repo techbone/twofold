@@ -76,3 +76,19 @@ Each time the rails or our code surprised us: the dead end, the path chosen, the
   a chain it doesn't have metadata for. If it doesn't, the fix is adding Portaldot V3 as a custom network.
 - `batchAll` success is detected from `ExtrinsicSuccess` in the block, not from "in block" alone, so a
   failed inner call can't show as done.
+
+## 2026-10-30 — First real wallets
+
+- **SubWallet signed `/launch` with no custom network.** It minted 1,000,000 WL (native id 71369440,
+  ERC-20 `0x044102E000000000000000000000000000010000`). The page read the native supply back and the
+  precompile supply matched. The launch cost 1.5427 tPOT, so the estimate in the cost box was
+  wrong: it counted the 1 tPOT asset-account deposit, which pallet-assets doesn't take when the holder
+  already has tPOT. The box now says about 1.5 tPOT.
+- After the launch the form kept showing "That asset id is taken", because the id now exists. Our own
+  asset counted as a clash. The warning is suppressed once a launch has started.
+- **Rabby rejected the chain switch with "Unrecognized chain ID".** `ensurePortaldot` only added the
+  network on MetaMask's error code 4902, and Rabby reports an unknown chain differently. **Guard:** any
+  failed switch except a user rejection (4001) now tries `wallet_addEthereumChain`, then switches again.
+- **Cross-side check with real wallets.** The EVM account `0xAaa2…6c58` is the native account
+  `5FvSEA4z…LEFcAw`. It got 1 tPOT first, then 100 WL sent from SubWallet with `assets.transferKeepAlive`
+  in Polkadot.js Apps. Rabby showed 100 WL. This is the "one object, two views" claim from a real wallet.

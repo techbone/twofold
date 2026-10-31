@@ -106,7 +106,8 @@ to live pUSD and rUSD addresses. The full trail is in [docs/build-log.md](docs/b
 |---|---|---|
 | Asset id → ERC-20 address | Live precompile calls; 16/16 testnet assets match; unit tests pinned to pUSD/rUSD | Real |
 | Disperse | Deployed on pallet-revive; e2e payout to 3 recipients agreed on both sides | Real |
-| Launch a native asset | `utility.batchAll[create, setMetadata, mint]` from the e2e script | Real on testnet from the script. Browser flow (`/launch`) is built and its transaction dry-runs clean, but wallet signing is untested until the testnet resumes |
+| Launch a native asset | `utility.batchAll[create, setMetadata, mint]`, from the e2e script and from the browser | Real. `/launch` was signed in SubWallet and minted 1,000,000 WL (native id 71369440), and the ERC-20 supply matched |
+| Hold it in an EVM wallet | `wallet_addEthereumChain`, `wallet_watchAsset`, precompile `balanceOf` | Real. After 100 WL were sent to the account's `h160 ‖ 0xEE×12` form, Rabby showed 100 WL. Not yet tried in MetaMask |
 | Asset directory web app | Reads pallet-assets and the precompile on every request | Real |
 | Liquidity seeding | — | Not built yet |
 | Foreign (XCM) assets | — | Not built |
