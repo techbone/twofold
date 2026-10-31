@@ -125,5 +125,5 @@ There's no backend database. Chain state is the source of truth.
 - **M1 (check-in, Oct 24 12:00 UTC):** `NativeAsset` + `Disperse` tested and deployed; e2e script
   runs launch → cross → disperse → dual verify on testnet; read-only asset directory live on the web.
 - **M2:** launch flow in the browser (native wallet), "Add to MetaMask", asset page with both views.
-- **M3:** disperse flow in the browser with named steps and verification; liquidity seeding.
+- **M3:** disperse flow in the browser with named steps and verification (done: `/payout`). Liquidity seeding is cut.
 - **M4:** polish, seeded demo mode, demo video, pitch deck, final README (before Nov 5 04:00 UTC).

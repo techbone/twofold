@@ -92,3 +92,23 @@ Each time the rails or our code surprised us: the dead end, the path chosen, the
 - **Cross-side check with real wallets.** The EVM account `0xAaa2…6c58` is the native account
   `5FvSEA4z…LEFcAw`. It got 1 tPOT first, then 100 WL sent from SubWallet with `assets.transferKeepAlive`
   in Polkadot.js Apps. Rabby showed 100 WL. This is the "one object, two views" claim from a real wallet.
+
+## 2026-10-31 — Browser payout flow
+
+- **A plain EVM value transfer funds a native account.** Sending 0.2 tPOT from the deployer to a
+  fresh `0x` address created its native account (providers 1) and cost about 0.011 tPOT in fees, so
+  `/payout` tops up recipients from the user's own EVM wallet and no native wallet is needed. The
+  native balance read 0.3 tPOT after a 0.2 send and the EVM balance 0.2: eth-rpc shows the balance
+  minus the 0.1 existential deposit.
+- **Recipient precheck:** `system.account(h160 ‖ 0xEE×12).providers == 0` marks a recipient with no
+  native account. The Pay button stays disabled until every recipient has one, which is the cause we
+  saw revert in the e2e run (still unproven, since eth-rpc doesn't surface the revert reason).
+  Before sending, the contract call is also gas-estimated, so a revert is caught without a signature.
+- **Verified in a real browser.** A stand-in `window.ethereum` signed with the throwaway deployer key
+  (real transactions, mocked wallet UI). Run 1: allowance from the e2e script (1000× the total) was
+  still in place, so approve was skipped. Run 2, after resetting allowance to 0: approve
+  `0x10795aa5…e2d95881`, payout `0x5a726866…78add271`, block 263,707, 3 of 3 recipients agree
+  between `assets.account` and the precompile `balanceOf`.
+- A test bug worth remembering: my first wait matched the step label "Balances agree on both sides"
+  and closed the browser mid-payout. The payout still landed, since the wallet side kept running.
+- Not yet tried: MetaMask or Rabby clicking through the real prompts.

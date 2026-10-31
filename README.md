@@ -79,8 +79,8 @@ below disappears.
 | Resolve | Paste an asset id | precompile `0x{id:u32}…0001 0000` → `totalSupply`, `decimals` |
 | Hold in MetaMask | Add to MetaMask | `wallet_watchAsset`, `balanceOf` |
 | Cross sides | Send to a 0x address | `assets.transferKeepAlive` to `h160 ‖ 0xEE×12` |
-| Liquidity | Seed a tPOT pool | `assetConversion.createPool`, `addLiquidity` |
-| Pay out | Approve → disperse | precompile `approve` → `Disperse.disperseAsset` |
+| Liquidity | Seed a tPOT pool | `assetConversion.createPool`, `addLiquidity` (not built) |
+| Pay out | Paste recipients → approve → disperse | precompile `approve` → `Disperse.disperseAsset` |
 
 ## Architecture
 
@@ -106,6 +106,7 @@ to live pUSD and rUSD addresses. The full trail is in [docs/build-log.md](docs/b
 |---|---|---|
 | Asset id → ERC-20 address | Live precompile calls; 16/16 testnet assets match; unit tests pinned to pUSD/rUSD | Real |
 | Disperse | Deployed on pallet-revive; e2e payout to 3 recipients agreed on both sides | Real |
+| Pay out in the browser | `/payout`: recipient check, tPOT top-up, approve, `disperseAsset`, dual-side verify | Real on testnet, driven through a browser with a stand-in wallet that signs with a throwaway key (3 of 3 recipients agreed on both sides, block 263,707). Not yet clicked through in MetaMask or Rabby |
 | Launch a native asset | `utility.batchAll[create, setMetadata, mint]`, from the e2e script and from the browser | Real. `/launch` was signed in SubWallet and minted 1,000,000 WL (native id 71369440), and the ERC-20 supply matched |
 | Hold it in an EVM wallet | `wallet_addEthereumChain`, `wallet_watchAsset`, precompile `balanceOf` | Real. After 100 WL were sent to the account's `h160 ‖ 0xEE×12` form, Rabby showed 100 WL. Not yet tried in MetaMask |
 | Asset directory web app | Reads pallet-assets and the precompile on every request | Real |
