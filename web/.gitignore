@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# written by next dev for coding agents; the root AGENTS.md is the one we keep
+/AGENTS.md
