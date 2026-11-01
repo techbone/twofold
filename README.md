@@ -11,7 +11,15 @@ address straight away, hold it in an EVM wallet and pay out to many holders from
 the live Portaldot V3 testnet with no mocks. Every balance is checked from both the native side
 and the EVM side, and the screen only says "verified" when they agree.
 
-[**Live app**](https://twofold-tau-sooty.vercel.app) · [**Verify it yourself**](#verify-it-yourself-in-60-seconds) · [**Architecture**](ARCHITECTURE.md) · [**Run it locally**](#run-it-locally)
+[**Watch the demo**](https://youtu.be/Pw0YTXZ54fk) · [**Live app**](https://twofold-tau-sooty.vercel.app) · [**Verify it yourself**](#verify-it-yourself-in-60-seconds) · [**Architecture**](ARCHITECTURE.md) · [**Run it locally**](#run-it-locally)
+
+## Demo
+
+[![Twofold demo video, 2:23](https://img.youtube.com/vi/Pw0YTXZ54fk/hqdefault.jpg)](https://youtu.be/Pw0YTXZ54fk)
+
+2:23, narrated. It launches a new token, then pays out to three recipients with the pre-check and both-side
+verification, all on the live testnet. Nothing is sped up. The wallets are scripted and sign real transactions, and the
+video says so. Shot list in [docs/demo-script.md](docs/demo-script.md).
 
 ## Verify it yourself in 60 seconds
 
@@ -57,6 +65,7 @@ The directory check (33 of 33 native assets have the same total supply on both s
 
 ## Contents
 
+- [Demo](#demo)
 - [The problem](#the-problem)
 - [What it does](#what-it-does)
 - [Architecture](#architecture)

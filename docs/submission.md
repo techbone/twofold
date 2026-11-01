@@ -7,6 +7,7 @@ Portaldot Network V3 Hacker House (DoraHacks), Modular Cloud & Middleware track.
 | Project | Twofold |
 | One-liner | Launch a Portaldot token, find its ERC-20 address, and pay out to many holders, with every balance checked from both the native side and the EVM side. |
 | Tags | Portaldot, pallet-assets, ERC-20, Foundry, Next.js |
+| Demo video | https://youtu.be/Pw0YTXZ54fk (2:23, narrated) |
 | Live app | https://twofold-tau-sooty.vercel.app |
 | Repo | https://github.com/techbone/twofold |
 | Architecture | [ARCHITECTURE.md](../ARCHITECTURE.md) |
