@@ -1,4 +1,4 @@
-# Demo video (2:08, narrated, captioned)
+# Demo video (2:23, narrated, captioned)
 
 Real runs only, against the live site and the live testnet. Nothing is sped up. The wallets are scripted
 (a stand-in that signs real transactions with throwaway keys), and the video says so on screen. Real SubWallet and

@@ -136,3 +136,11 @@ Each time the rails or our code surprised us: the dead end, the path chosen, the
   caught. The same review caught the closing caption covering the proof table, which now sits at the top.
 - Verified before claiming it: every one of the 33 native assets has the same total supply on the native side
   and from the precompile (33/33).
+- Narrated the video (Kokoro, one take, split on the gaps between sentences) and re-recorded the payout scene
+  after review: the first take never scrolled, so the approve, submit, in block and verified steps sat below
+  the fold behind a caption. The new take scrolls the "Pay out" section into view as soon as Pay is clicked,
+  and the step caption moved to the top. Payout from CRED again: approve `0x9ca30796…e82b5152`, payout
+  `0xff162c43…a3f81020`, block 278,329, 3 of 3 recipients agree.
+- Chrome's recording clock drifted about 2 s behind wall time over the long payout wait, so a caption keyed to
+  the "verified" timestamp fired early. Timings are now checked against frames of the composed video, not
+  the logged timestamps.
