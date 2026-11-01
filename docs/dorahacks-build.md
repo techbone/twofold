@@ -10,7 +10,7 @@
 
 **GitHub:** https://github.com/techbone/twofold
 
-**Video:** unlisted upload of `twofold-demo.mp4` (2:02, silent, captioned)
+**Video:** unlisted upload of `twofold-demo.mp4` (2:08, narrated, captioned)
 
 **Logo:** `twofold-logo-512.png`
 
@@ -94,7 +94,7 @@ Web app (Next.js, deployed on Vercel): a directory of all 33 native assets with 
 
 Real wallet runs: launch signed in SubWallet (1,000,000 WL, asset 71369440, ERC-20 supply matched). 100 WL sent to a Rabby account and shown in Rabby. Payout signed from Rabby to 2 recipients, block 269,675, both sides agreed. Hashes are in docs/build-log.md.
 
-Demo video: recorded, 2:02. It uses scripted wallets that sign real transactions, and says so on the end card.
+Demo video: recorded, 2:08, narrated. It uses scripted wallets that sign real transactions, and says so on the end card.
 
 Docs: README, ARCHITECTURE.md, build log with evidence.
 ```
